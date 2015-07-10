@@ -16,12 +16,17 @@ fn main() {
 
     while std::io::stdin().read(&mut buf)
         .ok()
-        .expect("a") != 0 {
+        .expect("Could not read from stdin.") != 0 {
 
         xor_buf(7, &mut buf);
 
-        std::io::stdout().write(&buf);
-        std::io::stdout().flush();
+        std::io::stdout().write(&buf)
+            .ok()
+            .expect("Could not write to stdout.");
+
+        std::io::stdout().flush()
+            .ok()
+            .expect("Could not flush stdout.");
     }
     //println!("Hello, world!");
 }
