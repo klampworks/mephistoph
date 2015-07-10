@@ -1,4 +1,5 @@
 use std::io::Read;
+use std::io::Write;
 
 fn xor(key: u8, data: u8) -> u8 {
     key ^ data
@@ -19,10 +20,8 @@ fn main() {
 
         xor_buf(7, &mut buf);
 
-        for x in buf.iter() {
-            print!("{}", x)
-        }
-
+        std::io::stdout().write(&buf);
+        std::io::stdout().flush();
     }
     //println!("Hello, world!");
 }
