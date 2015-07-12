@@ -19,7 +19,9 @@ fn xor_buf(key: &[u8], mut key_i: usize, buf: &mut [u8]) -> usize{
 
 fn main() {
     let mut buf = [0u8; 1];
-    let key : [u8; 4] = [1, 2, 3, 4];
+
+    let key_s: String = format!("hello");
+    let key = key_s.into_bytes();
     let mut key_i = 0;
 
     while std::io::stdin().read(&mut buf)
