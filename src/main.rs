@@ -7,11 +7,11 @@ fn xor(key: u8, data: u8) -> u8 {
 
 fn xor_buf(key: &[u8], mut key_i: usize, buf: &mut [u8]) -> usize{
 
-    let len = buf.len();
+    let len = key.len();
 
     for x in buf.iter_mut() {
         *x = xor(key[key_i], *x);
-        key_i = ((key_i + 1) % len) - 1;
+        key_i = (key_i + 1) % len;
     }
 
     return key_i;
