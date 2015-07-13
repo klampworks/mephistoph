@@ -38,7 +38,6 @@ fn main() {
             .ok()
             .expect("Could not flush stdout.");
     }
-    //println!("Hello, world!");
 }
 
 #[test]
@@ -88,5 +87,23 @@ fn test_xor_buf_1k_5b() {
 
     for i in (0..b_exp.len()) {
         assert_eq!(b_exp[i], buf[i])
+    }
+}
+
+#[test]
+fn test_xor_buf_5k_5b() {
+    let mut buf = [1,2,3,4,5];
+    let mut ki = 0;
+    let key = [5,4,3,2,1];
+    let b_exp = [[4,2,0,4,4],[1,6,3,6,5],[4,2,0,4,4],[1,6,3,6,5],[4,2,0,4,4]];
+    let k_exp = [[0; 5]; 5];
+
+    for i in (0..b_exp.len()) {
+        for j in (0..b_exp[i].len()) {
+
+            ki = xor_buf(&key, ki, &mut buf);
+            assert_eq!(k_exp[i][j], ki);
+            assert_eq!(b_exp[i][j], buf[j])
+        }
     }
 }
