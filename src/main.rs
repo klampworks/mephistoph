@@ -17,11 +17,8 @@ fn xor_buf(key: &[u8], mut key_i: usize, buf: &mut [u8]) -> usize{
     return key_i;
 }
 
-fn main() {
+fn xor_from_stdin(key : &[u8]) {
     let mut buf = [0u8; 1];
-
-    let key_s: String = format!("hello");
-    let key = key_s.into_bytes();
     let mut key_i = 0;
 
     while std::io::stdin().read(&mut buf)
@@ -38,6 +35,12 @@ fn main() {
             .ok()
             .expect("Could not flush stdout.");
     }
+}
+
+fn main() {
+    let key_s: String = format!("hello");
+    let key = key_s.into_bytes();
+    xor_from_stdin(&key);
 }
 
 #[test]
