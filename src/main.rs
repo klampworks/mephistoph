@@ -1,5 +1,9 @@
 use std::io::Read;
 use std::io::Write;
+use std::fs::File;
+
+//extern crate libc;
+//use libc::funcs::c95::stdio::*;
 
 fn xor(key: u8, data: u8) -> u8 {
     key ^ data
@@ -17,11 +21,11 @@ fn xor_buf(key: &[u8], mut key_i: usize, buf: &mut [u8]) -> usize{
     return key_i;
 }
 
-fn xor_from_stdin(key : &[u8]) {
+fn xor_from_stdin<T: Read>(key : &[u8], mut f: T) {
     let mut buf = [0u8; 1];
     let mut key_i = 0;
 
-    while std::io::stdin().read(&mut buf)
+    while f.read(&mut buf)
         .ok()
         .expect("Could not read from stdin.") != 0 {
 
@@ -40,7 +44,10 @@ fn xor_from_stdin(key : &[u8]) {
 fn main() {
     let key_s: String = format!("hello");
     let key = key_s.into_bytes();
-    xor_from_stdin(&key);
+
+    //let f = std::io::stdin();
+    let f = File::open("Cargo.toml").ok().expect("");
+    xor_from_stdin(&key, f);
 }
 
 #[test]
