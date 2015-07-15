@@ -2,6 +2,7 @@ use std::io::Read;
 use std::io::Write;
 use std::io::Error;
 use std::fs::File;
+use std::io::BufRead;
 
 //extern crate libc;
 //use libc::funcs::c95::stdio::*;
@@ -68,7 +69,10 @@ fn main() {
 
     //let f = std::io::stdin();
     let f = File::open("Cargo.toml").ok().expect("");
-    xor_from_stdin(&key, f);
+
+    let data = Array{ data:[66; 1024]};
+    let br = std::io::BufReader::new(data);
+    xor_from_stdin(&key, br);
 }
 
 #[test]
