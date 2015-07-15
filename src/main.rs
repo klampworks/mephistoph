@@ -1,5 +1,6 @@
 use std::io::Read;
 use std::io::Write;
+use std::io::Error;
 use std::fs::File;
 
 //extern crate libc;
@@ -38,6 +39,26 @@ fn xor_from_stdin<T: Read>(key : &[u8], mut f: T) {
         std::io::stdout().flush()
             .ok()
             .expect("Could not flush stdout.");
+    }
+}
+
+struct Array<T> {
+    data: [T; 1024]
+}
+
+impl<T> Read for Array<T> {
+
+    fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
+
+        let mut out_i = 0;
+        let mut in_i = 0;
+
+        while out_i < buf.len() {
+            buf[out_i] = 1;
+            out_i += 1;
+        }
+
+        return Ok(out_i);
     }
 }
 
