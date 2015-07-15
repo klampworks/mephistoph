@@ -44,7 +44,16 @@ fn xor_from_stdin<T: Read>(key : &[u8], mut f: T) {
     }
 }
 
-struct MyVec(Vec<u8>);
+struct MyVec {
+    data: Vec<u8>,
+    i: usize
+}
+
+impl MyVec {
+    fn new(d: Vec<u8>) -> MyVec {
+        MyVec{ data: d, i: 0}
+    }
+}
 
 impl Read for MyVec {
 
@@ -70,7 +79,7 @@ fn main() {
     let f = File::open("Cargo.toml").ok().expect("");
 
 //    let data = Array{ data:[66; 1024]};
-      let data: MyVec = MyVec(vec![66u8; 10]);
+      let data: MyVec = MyVec::new(vec![66u8; 10]);
     let br = std::io::BufReader::new(data);
     xor_from_stdin(&key, br);
 }
