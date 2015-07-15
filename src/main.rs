@@ -3,6 +3,7 @@ use std::io::Write;
 use std::io::Error;
 use std::fs::File;
 use std::io::BufRead;
+use std::vec::Vec;
 
 //extern crate libc;
 //use libc::funcs::c95::stdio::*;
@@ -43,11 +44,9 @@ fn xor_from_stdin<T: Read>(key : &[u8], mut f: T) {
     }
 }
 
-struct Array<T> {
-    data: [T; 1024]
-}
+struct MyVec(Vec<u8>);
 
-impl<T> Read for Array<T> {
+impl Read for MyVec {
 
     fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
 
@@ -70,7 +69,8 @@ fn main() {
     //let f = std::io::stdin();
     let f = File::open("Cargo.toml").ok().expect("");
 
-    let data = Array{ data:[66; 1024]};
+//    let data = Array{ data:[66; 1024]};
+      let data: MyVec = MyVec(vec![66u8; 10]);
     let br = std::io::BufReader::new(data);
     xor_from_stdin(&key, br);
 }
