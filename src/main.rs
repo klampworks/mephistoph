@@ -60,10 +60,10 @@ impl Read for MyVec {
     fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
 
         let mut out_i = 0;
-        let mut in_i = 0;
 
         while out_i < buf.len() {
-            buf[out_i] = 1;
+            buf[out_i] = self.data[self.i];
+            self.i = (self.i + 1) % self.data.len();
             out_i += 1;
         }
 
@@ -150,4 +150,17 @@ fn test_xor_buf_5k_5b() {
             assert_eq!(b_exp[i][j], buf[j])
         }
     }
+}
+
+#[test]
+fn test_myvec_read() {
+
+    let data: MyVec = MyVec::new(vec![66u8; 1]);
+    let mut br = std::io::BufReader::new(data);
+    let mut buf = [0u8; 10];
+    let mut exp = [66u8; 10];
+
+    assert!(buf != exp);
+    br.read(&mut buf);
+    assert_eq!(buf, exp)
 }
