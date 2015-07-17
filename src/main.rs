@@ -44,22 +44,22 @@ fn xor_from_stdin<T: Read>(key : &[u8], mut f: T) {
     }
 }
 
-struct MyVec {
+struct CircVec {
     data: Vec<u8>,
     i: usize
 }
 
-impl MyVec {
-    fn new(d: Vec<u8>) -> MyVec {
-        MyVec{ data: d, i: 0}
+impl CircVec {
+    fn new(d: Vec<u8>) -> CircVec {
+        CircVec{ data: d, i: 0}
     }
 }
 
 trait CircRead {
-    fn circread(&mut self, buf: &mut [u8]) -> std::io::Result<usize>;
+    fn circread(&mut self , buf: &mut [u8]) -> std::io::Result<usize>;
 }
 
-impl CircRead for MyVec {
+impl CircRead for CircVec {
     fn circread(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
         let mut out_i = 0;
 
@@ -73,7 +73,7 @@ impl CircRead for MyVec {
     }
 }
 
-impl Read for MyVec {
+impl Read for CircVec {
 
     fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
 
@@ -96,7 +96,7 @@ fn main() {
     let f = File::open("Cargo.toml").ok().expect("");
 
 //    let data = Array{ data:[66; 1024]};
-      let data: MyVec = MyVec::new(vec![66u8; 10]);
+      let data: CircVec = CircVec::new(vec![66u8; 10]);
     let br = std::io::BufReader::new(data);
     xor_from_stdin(&key, br);
 }
@@ -172,7 +172,7 @@ fn test_xor_buf_5k_5b() {
 #[test]
 fn test_myvec_read() {
 
-    let data: MyVec = MyVec::new(vec![66u8; 1]);
+    let data: CircVec = CircVec::new(vec![66u8; 1]);
     let mut br = std::io::BufReader::new(data);
     let mut buf = [0u8; 10];
 //    let mut exp = [66u8; 10];
