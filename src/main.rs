@@ -55,15 +55,32 @@ impl MyVec {
     }
 }
 
+trait CircRead {
+    fn circread(&mut self, buf: &mut [u8]) -> std::io::Result<usize>;
+}
+
+impl CircRead for MyVec {
+    fn circread(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
+        let mut out_i = 0;
+
+        while out_i < buf.len() {
+            buf[out_i] = self.data[self.i];
+            self.i = (self.i + 1) % self.data.len();
+            out_i += 1;
+        }
+
+        return Ok(out_i);
+    }
+}
+
 impl Read for MyVec {
 
     fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
 
         let mut out_i = 0;
 
-        while out_i < buf.len() {
-            buf[out_i] = self.data[self.i];
-            self.i = (self.i + 1) % self.data.len();
+        while out_i < self.data.len() && out_i < buf.len() {
+            buf[out_i] = self.data[out_i];
             out_i += 1;
         }
 
@@ -158,7 +175,9 @@ fn test_myvec_read() {
     let data: MyVec = MyVec::new(vec![66u8; 1]);
     let mut br = std::io::BufReader::new(data);
     let mut buf = [0u8; 10];
-    let mut exp = [66u8; 10];
+//    let mut exp = [66u8; 10];
+    let mut exp = [0u8; 10];
+    exp[0] = 66u8;
 
     assert!(buf != exp);
     br.read(&mut buf);
