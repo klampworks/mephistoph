@@ -1,30 +1,12 @@
 use std::io::Read;
 use std::io::Write;
-use std::io::Error;
-use std::fs::File;
-use std::io::BufRead;
 use std::vec::Vec;
-
-//extern crate libc;
-//use libc::funcs::c95::stdio::*;
 
 fn xor(key: u8, data: u8) -> u8 {
     key ^ data
 }
 
-fn xor_buf(key: &[u8], mut key_i: usize, buf: &mut [u8]) -> usize{
-
-    let len = key.len();
-
-    for x in buf.iter_mut() {
-        *x = xor(key[key_i], *x);
-        key_i = (key_i + 1) % len;
-    }
-
-    return key_i;
-}
-
-fn xor_buf2(key: &[u8], buf: &mut [u8]) {
+fn xor_buf(key: &[u8], buf: &mut [u8]) {
     assert_eq!(key.len(), buf.len());
 
     for i in 0..(key.len()) {
@@ -43,33 +25,13 @@ fn xor_file_to_file<T: Read, K: CircRead, O: Write>
         .expect("Could not read from stdin.") != 0 {
 
         key.circread(&mut kbuf);
-        xor_buf2(&kbuf, &mut dbuf);
+        xor_buf(&kbuf, &mut dbuf);
 
         out.write(&dbuf)
             .ok()
             .expect("Could not write to stdout.");
 
         out.flush()
-            .ok()
-            .expect("Could not flush stdout.");
-    }
-}
-
-fn xor_from_stdin<T: Read>(key : &[u8], mut f: T) {
-    let mut buf = [0u8; 1];
-    let mut key_i = 0;
-
-    while f.read(&mut buf)
-        .ok()
-        .expect("Could not read from stdin.") != 0 {
-
-        key_i = xor_buf(&key, key_i, &mut buf);
-
-        std::io::stdout().write(&buf)
-            .ok()
-            .expect("Could not write to stdout.");
-
-        std::io::stdout().flush()
             .ok()
             .expect("Could not flush stdout.");
     }
@@ -124,10 +86,8 @@ impl Write for CircVec {
     fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
 
         let mut out_i = 0;
-        println!("Entered write {}", self.data.len());
         while self.wi < self.data.len() && out_i < buf.len() {
             self.data[self.wi] = buf[out_i];
-            println!("writing {} --> {}", buf[out_i], self.data[self.wi]);
             out_i += 1;
             self.wi += 1;
         }
@@ -145,15 +105,10 @@ impl Write for CircVec {
 fn main() {
 
     let key_s: String = format!("hello");
-    let key = key_s.into_bytes();
-
-    //let f = std::io::stdin();
-    let f = File::open("Cargo.toml").ok().expect("");
-
-//    let data = Array{ data:[66; 1024]};
-      let data: CircVec = CircVec::new(vec![66u8; 10]);
-    let br = std::io::BufReader::new(data);
-    xor_from_stdin(&key, br);
+    let mut key = CircVec::new(key_s.into_bytes());
+    let mut fin = std::io::stdin();
+    let mut fout = std::io::stdout();
+    xor_file_to_file(&mut key, &mut fin, &mut fout);
 }
 
 #[test]
