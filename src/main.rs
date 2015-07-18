@@ -35,8 +35,8 @@ fn xor_buf2(key: &[u8], buf: &mut [u8]) {
 fn xor_file_to_file<T: Read, K: CircRead, O: Write>
     (key: &mut K, mut f: T, out: &mut O) {
 
-    let mut kbuf = [0u8; 1];
-    let mut dbuf = [0u8; 1];
+    let mut kbuf = [0u8; 5];
+    let mut dbuf = [0u8; 5];
 
     while f.read(&mut dbuf)
         .ok()
@@ -108,16 +108,40 @@ impl Read for CircVec {
 
         let mut out_i = 0;
 
-        while out_i < self.data.len() && out_i < buf.len() {
-            buf[out_i] = self.data[out_i];
+        while self.i < self.data.len() && out_i < buf.len() {
+            buf[out_i] = self.data[self.i];
             out_i += 1;
+            self.i += 1;
         }
 
         return Ok(out_i);
     }
 }
 
+impl Write for CircVec {
+
+    fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
+
+        let mut out_i = 0;
+
+        while self.i < self.data.len() && out_i < buf.len() {
+             self.data[self.i] = buf[out_i];
+            out_i += 1;
+            self.i += 1;
+        }
+
+        return Ok(out_i);
+    }
+
+    fn flush(&mut self) -> std::io::Result<()> {
+        // Err...
+        // <(^.^)<
+        return Ok(());
+    }
+}
+
 fn main() {
+
     let key_s: String = format!("hello");
     let key = key_s.into_bytes();
 
@@ -211,4 +235,15 @@ fn test_myvec_read() {
     assert!(buf != exp);
     br.read(&mut buf);
     assert_eq!(buf, exp)
+}
+
+#[test]
+fn test_xor_file_to_file() {
+    let mut key: CircVec = CircVec::new(vec![66u8; 5]);
+    let mut data: CircVec = CircVec::new(vec![1u8, 2u8, 3u8, 4u8, 5u8]);
+    let mut out: CircVec = CircVec::new(vec![66u8; 0]);
+
+    xor_file_to_file(&mut key, &mut data, &mut out);
+
+    assert_eq!(out.data, data.data)
 }
