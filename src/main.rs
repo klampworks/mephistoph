@@ -225,12 +225,11 @@ fn test_xor_buf_5k_5b() {
 }
 
 #[test]
-fn test_myvec_read() {
+fn test_circvec_read() {
 
     let data: CircVec = CircVec::new(vec![66u8; 1]);
     let mut br = std::io::BufReader::new(data);
     let mut buf = [0u8; 10];
-//    let mut exp = [66u8; 10];
     let mut exp = [0u8; 10];
     exp[0] = 66u8;
 
@@ -240,8 +239,19 @@ fn test_myvec_read() {
 }
 
 #[test]
+fn test_circvec_write() {
+
+    let bin = vec![1,2,3,4,5];
+    let mut bout: CircVec = CircVec::new(vec![0u8; 5]);
+
+    assert!(bin != bout.data);
+    bout.write(&bin);
+    assert_eq!(bin, bout.data)
+}
+
+#[test]
 fn test_xor_file_to_file() {
-    let mut key: CircVec = CircVec::new(vec![66u8; 5]);
+    let mut key: CircVec = CircVec::new(vec![66u8; 1]);
     let mut data: CircVec = CircVec::new(vec![1u8, 2u8, 3u8, 4u8, 5u8]);
     let data_exp = vec![67u8, 64u8, 65u8, 70u8, 71u8];
     let mut out: CircVec = CircVec::new(vec![0u8; 5]);
