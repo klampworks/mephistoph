@@ -2,6 +2,9 @@ use std::io::Read;
 use std::io::Write;
 use std;
 
+#[cfg(test)]
+mod tests;
+
 pub struct CircVec {
     data: Vec<u8>,
     wi: usize,
