@@ -77,12 +77,13 @@ fn xor_from_stdin<T: Read>(key : &[u8], mut f: T) {
 
 struct CircVec {
     data: Vec<u8>,
-    i: usize
+    wi: usize,
+    ri: usize
 }
 
 impl CircVec {
     fn new(d: Vec<u8>) -> CircVec {
-        CircVec{ data: d, i: 0}
+        CircVec{ data: d, wi: 0, ri: 0}
     }
 }
 
@@ -95,8 +96,8 @@ impl CircRead for CircVec {
         let mut out_i = 0;
 
         while out_i < buf.len() {
-            buf[out_i] = self.data[self.i];
-            self.i = (self.i + 1) % self.data.len();
+            buf[out_i] = self.data[self.ri];
+            self.ri = (self.ri + 1) % self.data.len();
             out_i += 1;
         }
     }
@@ -108,10 +109,10 @@ impl Read for CircVec {
 
         let mut out_i = 0;
 
-        while self.i < self.data.len() && out_i < buf.len() {
-            buf[out_i] = self.data[self.i];
+        while self.ri < self.data.len() && out_i < buf.len() {
+            buf[out_i] = self.data[self.ri];
             out_i += 1;
-            self.i += 1;
+            self.ri += 1;
         }
 
         return Ok(out_i);
@@ -123,11 +124,12 @@ impl Write for CircVec {
     fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
 
         let mut out_i = 0;
-
-        while self.i < self.data.len() && out_i < buf.len() {
-             self.data[self.i] = buf[out_i];
+        println!("Entered write {}", self.data.len());
+        while self.wi < self.data.len() && out_i < buf.len() {
+            self.data[self.wi] = buf[out_i];
+            println!("writing {} --> {}", buf[out_i], self.data[self.wi]);
             out_i += 1;
-            self.i += 1;
+            self.wi += 1;
         }
 
         return Ok(out_i);
@@ -241,9 +243,10 @@ fn test_myvec_read() {
 fn test_xor_file_to_file() {
     let mut key: CircVec = CircVec::new(vec![66u8; 5]);
     let mut data: CircVec = CircVec::new(vec![1u8, 2u8, 3u8, 4u8, 5u8]);
-    let mut out: CircVec = CircVec::new(vec![66u8; 0]);
+    let data_exp = vec![67u8, 64u8, 65u8, 70u8, 71u8];
+    let mut out: CircVec = CircVec::new(vec![0u8; 5]);
 
     xor_file_to_file(&mut key, &mut data, &mut out);
 
-    assert_eq!(out.data, data.data)
+    assert_eq!(out.data, data_exp)
 }
