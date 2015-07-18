@@ -130,7 +130,7 @@ fn test_circvec_read() {
     exp[0] = 66u8;
 
     assert!(buf != exp);
-    data.read(&mut buf);
+    assert_eq!(data.read(&mut buf).ok().unwrap(), data.data.len());
     assert_eq!(buf, exp)
 }
 
@@ -139,7 +139,7 @@ fn test_circvec_circread() {
 
     let mut data: CircVec = CircVec::new(vec![66u8; 1]);
     let mut buf = [0u8; 10];
-    let mut exp = [66u8; 10];
+    let exp = [66u8; 10];
 
     assert!(buf != exp);
     data.circread(&mut buf);
@@ -153,7 +153,10 @@ fn test_circvec_write() {
     let mut bout: CircVec = CircVec::new(vec![0u8; 5]);
 
     assert!(bin != bout.data);
-    bout.write(&bin);
+
+    assert_eq!(bin.len(), bout.data.len());
+    assert_eq!(bout.write(&bin).ok().unwrap(), bin.len());
+
     assert_eq!(bin, bout.data)
 }
 
