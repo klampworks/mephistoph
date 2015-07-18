@@ -227,14 +227,25 @@ fn test_xor_buf_5k_5b() {
 #[test]
 fn test_circvec_read() {
 
-    let data: CircVec = CircVec::new(vec![66u8; 1]);
-    let mut br = std::io::BufReader::new(data);
+    let mut data: CircVec = CircVec::new(vec![66u8; 1]);
     let mut buf = [0u8; 10];
     let mut exp = [0u8; 10];
     exp[0] = 66u8;
 
     assert!(buf != exp);
-    br.read(&mut buf);
+    data.read(&mut buf);
+    assert_eq!(buf, exp)
+}
+
+#[test]
+fn test_circvec_circread() {
+
+    let mut data: CircVec = CircVec::new(vec![66u8; 1]);
+    let mut buf = [0u8; 10];
+    let mut exp = [66u8; 10];
+
+    assert!(buf != exp);
+    data.circread(&mut buf);
     assert_eq!(buf, exp)
 }
 
