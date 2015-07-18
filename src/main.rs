@@ -24,6 +24,37 @@ fn xor_buf(key: &[u8], mut key_i: usize, buf: &mut [u8]) -> usize{
     return key_i;
 }
 
+fn xor_buf2(key: &[u8], buf: &mut [u8]) {
+    assert_eq!(key.len(), buf.len());
+
+    for i in 0..(key.len()) {
+        buf[i] = xor(key[i], buf[i])
+    }
+}
+
+fn xor_file_to_file<T: Read, K: CircRead, O: Write>
+    (key: &mut K, mut f: T, out: &mut O) {
+
+    let mut kbuf = [0u8; 1];
+    let mut dbuf = [0u8; 1];
+
+    while f.read(&mut dbuf)
+        .ok()
+        .expect("Could not read from stdin.") != 0 {
+
+        key.circread(&mut kbuf);
+        xor_buf2(&kbuf, &mut dbuf);
+
+        out.write(&dbuf)
+            .ok()
+            .expect("Could not write to stdout.");
+
+        out.flush()
+            .ok()
+            .expect("Could not flush stdout.");
+    }
+}
+
 fn xor_from_stdin<T: Read>(key : &[u8], mut f: T) {
     let mut buf = [0u8; 1];
     let mut key_i = 0;
@@ -56,11 +87,11 @@ impl CircVec {
 }
 
 trait CircRead {
-    fn circread(&mut self , buf: &mut [u8]) -> std::io::Result<usize>;
+    fn circread(&mut self , buf: &mut [u8]);
 }
 
 impl CircRead for CircVec {
-    fn circread(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
+    fn circread(&mut self, buf: &mut [u8]) {
         let mut out_i = 0;
 
         while out_i < buf.len() {
@@ -68,8 +99,6 @@ impl CircRead for CircVec {
             self.i = (self.i + 1) % self.data.len();
             out_i += 1;
         }
-
-        return Ok(out_i);
     }
 }
 
