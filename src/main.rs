@@ -167,64 +167,6 @@ fn test_xor_id() {
 }
 
 #[test]
-fn test_xor_buf_1k_1b() {
-    let mut buf = [7u8];
-
-    // New index for a length 1 key should be 0.
-    assert_eq!(0, xor_buf(&[6], 0, &mut buf));
-    assert_eq!(1, buf[0])
-}
-
-#[test]
-fn test_xor_buf_5k_1b() {
-    let mut buf = [7u8];
-    let mut ki = 0;
-    let key = [1,2,3,4,5];
-    let b_exp = [6, 4, 7, 3, 6];
-    let k_exp = [1,2,3,4,0];
-
-    for i in (0..b_exp.len()) {
-        ki = xor_buf(&key, ki, &mut buf);
-        assert_eq!(k_exp[i], ki);
-        assert_eq!(b_exp[i], buf[0])
-    }
-}
-
-#[test]
-fn test_xor_buf_1k_5b() {
-    let mut buf = [1,2,3,4,5];
-    let mut ki = 0;
-    let key = [6];
-    let b_exp = [7, 4, 5, 2, 3];
-    let k_exp = 0;
-
-    ki = xor_buf(&key, ki, &mut buf);
-    assert_eq!(k_exp, ki);
-
-    for i in (0..b_exp.len()) {
-        assert_eq!(b_exp[i], buf[i])
-    }
-}
-
-#[test]
-fn test_xor_buf_5k_5b() {
-    let mut buf = [1,2,3,4,5];
-    let mut ki = 0;
-    let key = [5,4,3,2,1];
-    let b_exp = [[4,2,0,4,4],[1,6,3,6,5],[4,2,0,4,4],[1,6,3,6,5],[4,2,0,4,4]];
-    let k_exp = [[0; 5]; 5];
-
-    for i in (0..b_exp.len()) {
-        for j in (0..b_exp[i].len()) {
-
-            ki = xor_buf(&key, ki, &mut buf);
-            assert_eq!(k_exp[i][j], ki);
-            assert_eq!(b_exp[i][j], buf[j])
-        }
-    }
-}
-
-#[test]
 fn test_circvec_read() {
 
     let mut data: CircVec = CircVec::new(vec![66u8; 1]);
