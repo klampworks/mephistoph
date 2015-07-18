@@ -1,9 +1,5 @@
-use std::io::Read;
-use std::io::Write;
-
 mod circ_vec;
 use circ_vec::CircVec;
-use circ_vec::CircRead;
 
 mod xor;
 use xor::xor_file_to_file;
@@ -16,8 +12,3 @@ fn main() {
     let mut fout = std::io::stdout();
     xor_file_to_file(&mut key, &mut fin, &mut fout);
 }
-
-/*
-
-
-*/
