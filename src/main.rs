@@ -22,24 +22,26 @@ fn main() {
     opts.optopt("k", "key", 
         "A string to be used as a key. If shorter than data will be cycled.", 
         "\"my secret key\"");
+
     let matches = match opts.parse(&args[1..]) {
             Ok(m) => {m}
             Err(f) => { panic!(f.to_string()) }
     };
-    print_usage(&program, opts);
-    let keyi = matches.opt_str("k");
-    println!("key = {}", keyi.unwrap());
-    let key = if !matches.free.is_empty() {
-        matches.free[0].clone()
-    } else {
-        return;
-    };
 
+
+    let key_s = match matches.opt_str("k") {
+        Some(k) => {k}
+        None => {format!("")} };
+
+    if key_s.is_empty() {
+        print_usage(&program, opts);
+        return;
+    }
 /*
     let key_s: String = format!("hello");
+    */
     let mut key = CircVec::new(key_s.into_bytes());
     let mut fin = std::io::stdin();
     let mut fout = std::io::stdout();
     xor_file_to_file(&mut key, &mut fin, &mut fout);
-    */
 }
