@@ -33,15 +33,16 @@ fn main() {
         Some(k) => {k}
         None => {format!("")} };
 
-    if key_s.is_empty() {
-        print_usage(&program, opts);
+    if !key_s.is_empty() {
+
+        let mut key = CircVec::new(key_s.into_bytes());
+        let mut fin = std::io::stdin();
+        let mut fout = std::io::stdout();
+
+        xor_file_to_file(&mut key, &mut fin, &mut fout);
         return;
     }
-/*
-    let key_s: String = format!("hello");
-    */
-    let mut key = CircVec::new(key_s.into_bytes());
-    let mut fin = std::io::stdin();
-    let mut fout = std::io::stdout();
-    xor_file_to_file(&mut key, &mut fin, &mut fout);
+
+    print_usage(&program, opts);
+    return;
 }
