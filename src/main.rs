@@ -22,16 +22,19 @@ fn main() {
     opts.optopt("k", "key", 
         "A string to be used as a key. If shorter than data will be cycled.", 
         "\"my secret key\"");
+    opts.optopt("kf", "keyfile", 
+        "A file to be used as a key. If the contents is shorter than the data it will be cycled.", 
+        "\"~/my-key-file\"");
 
     let matches = match opts.parse(&args[1..]) {
             Ok(m) => {m}
             Err(f) => { panic!(f.to_string()) }
     };
 
-
     let key_s = match matches.opt_str("k") {
         Some(k) => {k}
-        None => {format!("")} };
+        None => {format!("")} 
+    };
 
     if !key_s.is_empty() {
 
@@ -43,6 +46,15 @@ fn main() {
         return;
     }
 
+    let key_f = match matches.opt_str("kf") {
+        Some(k) => {k}
+        None => {format!("")} 
+    };
+
+    if !key_f.is_empty() {
+
+        //oops
+    }
     print_usage(&program, opts);
     return;
 }
