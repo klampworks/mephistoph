@@ -3,6 +3,8 @@ use ::xor::*;
 use super::*;
 use std::io::Read;
 use std::io::Write;
+use std::fs::File;
+use std::env::vars;
 
 #[test]
 fn test_xor_val() {
@@ -75,4 +77,19 @@ fn test_xor_file_to_file() {
     xor_file_to_file(&mut key, &mut data, &mut out);
 
     assert_eq!(out.data, data_exp)
+}
+
+#[test]
+fn test_file_circread() {
+    let pwd = vars().find(|ref x| x.0 == "PWD");
+    let mut f = match File::open("1octet.bin") {
+        Ok(f) => {f}
+        Err(f) => {panic!(f.to_string())}
+    };
+    let mut buf = [0u8; 10];
+    let exp = [97u8; 10];
+
+    assert!(buf != exp);
+    f.circread(&mut buf);
+    assert_eq!(buf, exp);
 }
