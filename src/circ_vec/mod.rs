@@ -1,5 +1,8 @@
 use std::io::Read;
 use std::io::Write;
+use std::io::Seek;
+use std::io::SeekFrom;
+use std::fs::File;
 use std;
 
 #[cfg(test)]
@@ -67,5 +70,24 @@ impl Write for CircVec {
         // Err...
         // <(^.^)<
         return Ok(());
+    }
+}
+
+impl CircRead for std::fs::File {
+    fn circread(&mut self, buf: &mut [u8]) {
+
+        assert!(buf.len() != 0);        
+
+        let mut bv: Vec<u8> = Vec::with_capacity(buf.len());
+        let mut b = &mut bv[0..buf.len()];
+        let mut read = 0;
+
+        while read < buf.len() {
+            read += match self.read(&mut b) {
+                Ok(s) => {s}
+                Err(f) => {panic!(f.to_string())}
+            };
+            self.seek(SeekFrom::Start(0));
+        };
     }
 }
