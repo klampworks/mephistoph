@@ -21,7 +21,7 @@ impl CircVec {
 }
 
 pub trait CircRead {
-    fn circread(&mut self , buf: &mut [u8]);
+    fn circread(&mut self, buf: &mut [u8]);
 }
 
 impl CircRead for CircVec {

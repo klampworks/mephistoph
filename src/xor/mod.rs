@@ -15,8 +15,8 @@ fn xor_buf(key: &[u8], buf: &mut [u8]) {
     }
 }
 
-pub fn xor_file_to_file<T: Read, K: CircRead, O: Write>
-    (key: &mut K, mut f: T, out: &mut O) {
+pub fn xor_file_to_file<T: Read, O: Write>
+    (key: &mut CircRead, mut f: T, out: &mut O) {
 
     let mut kbuf = [0u8; 5];
     let mut dbuf = [0u8; 5];

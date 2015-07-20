@@ -1,5 +1,6 @@
 mod circ_vec;
 use circ_vec::CircVec;
+use circ_vec::CircRead;
 
 mod xor;
 use xor::xor_file_to_file;
@@ -16,6 +17,8 @@ fn print_usage(program: &str, opts: Options) {
 }
 
 fn main() {
+
+    let mut kk: Option<Box<CircRead>> = None;
 
     let args: Vec<String> = env::args().collect();
     let program = args[0].clone();
@@ -40,12 +43,15 @@ fn main() {
 
     if !key_s.is_empty() {
 
+        kk = Some(Box::new(CircVec::new(key_s.into_bytes())));
+        /*
         let mut key = CircVec::new(key_s.into_bytes());
+
         let mut fin = std::io::stdin();
         let mut fout = std::io::stdout();
 
         xor_file_to_file(&mut key, &mut fin, &mut fout);
-        return;
+        */
     }
 
     let key_f = match matches.opt_str("keyfile") {
@@ -58,14 +64,26 @@ fn main() {
             Ok(f) => {f}
             Err(f) => {panic!(f.to_string())}
         };
+        kk = Some(Box::new(key_file));
 
+/*
         let mut fin = std::io::stdin();
         let mut fout = std::io::stdout();
 
         xor_file_to_file(&mut key_file, &mut fin, &mut fout);
-        return;
+        */
 
         //oops
+    }
+
+    if kk.is_some() {
+
+        let mut fin = std::io::stdin();
+        let mut fout = std::io::stdout();
+
+        let k: &mut CircRead = &mut*kk.unwrap();
+        xor_file_to_file(k, &mut fin, &mut fout);
+        return;
     }
     print_usage(&program, opts);
     return;
