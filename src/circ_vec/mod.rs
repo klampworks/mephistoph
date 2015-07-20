@@ -78,15 +78,29 @@ impl CircRead for std::fs::File {
 
         assert!(buf.len() != 0);        
 
+        //error: expected constant integer for repeat count, but unsupported constant expr [E0307]
+        // Boo
+        //let mut bv: Vec<u8> = vec!([0u8; buf.len()]);
+
         let mut bv: Vec<u8> = Vec::with_capacity(buf.len());
+        for i in 0..buf.len() {
+            bv.push(0);
+        }
+
+        assert_eq!(bv.len(), buf.len());
         let mut b = &mut bv[0..buf.len()];
         let mut read = 0;
 
         while read < buf.len() {
-            read += match self.read(&mut b) {
+            let r = match self.read(&mut b) {
                 Ok(s) => {s}
                 Err(f) => {panic!(f.to_string())}
             };
+
+            for i in 0..r {
+                buf[read] = b[i];
+                read += 1;
+            }
             self.seek(SeekFrom::Start(0));
         };
     }
