@@ -42,16 +42,7 @@ fn main() {
     };
 
     if !key_s.is_empty() {
-
         kk = Some(Box::new(CircVec::new(key_s.into_bytes())));
-        /*
-        let mut key = CircVec::new(key_s.into_bytes());
-
-        let mut fin = std::io::stdin();
-        let mut fout = std::io::stdout();
-
-        xor_file_to_file(&mut key, &mut fin, &mut fout);
-        */
     }
 
     let key_f = match matches.opt_str("keyfile") {
@@ -65,15 +56,6 @@ fn main() {
             Err(f) => {panic!(f.to_string())}
         };
         kk = Some(Box::new(key_file));
-
-/*
-        let mut fin = std::io::stdin();
-        let mut fout = std::io::stdout();
-
-        xor_file_to_file(&mut key_file, &mut fin, &mut fout);
-        */
-
-        //oops
     }
 
     if kk.is_some() {
@@ -85,6 +67,7 @@ fn main() {
         xor_file_to_file(k, &mut fin, &mut fout);
         return;
     }
+
     print_usage(&program, opts);
     return;
 }
