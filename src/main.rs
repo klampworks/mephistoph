@@ -16,6 +16,33 @@ fn print_usage(program: &str, opts: Options) {
             print!("{}", opts.usage(&brief));
 }
 
+fn parse_key(matches: getopts::Matches) -> Option<Box<CircRead>> {
+
+    let mut ret: Option<Box<CircRead>> = None;
+
+    ret = match matches.opt_str("k") {
+        Some(k) => {
+            Some(Box::new(CircVec::new(k.into_bytes()))) }
+        None => {None} 
+    };
+
+    if ret.is_some() {
+        return ret;
+    }
+
+    ret = match matches.opt_str("keyfile") {
+        Some(k) => {
+            match File::open(k) {
+                Ok(f) => {Some(Box::new(f))}
+                Err(f) => {panic!(f.to_string())}
+            }
+        }
+        None => {None} 
+    };
+
+    return ret;
+}
+
 fn main() {
 
     let mut kk: Option<Box<CircRead>> = None;
@@ -36,27 +63,7 @@ fn main() {
             Err(f) => { panic!(f.to_string()) }
     };
 
-    let key_s = match matches.opt_str("k") {
-        Some(k) => {k}
-        None => {format!("")} 
-    };
-
-    if !key_s.is_empty() {
-        kk = Some(Box::new(CircVec::new(key_s.into_bytes())));
-    }
-
-    let key_f = match matches.opt_str("keyfile") {
-        Some(k) => {k}
-        None => {format!("")} 
-    };
-
-    if !key_f.is_empty() {
-        let mut key_file = match File::open(key_f) {
-            Ok(f) => {f}
-            Err(f) => {panic!(f.to_string())}
-        };
-        kk = Some(Box::new(key_file));
-    }
+    kk = parse_key(matches);
 
     if kk.is_some() {
 
