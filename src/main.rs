@@ -45,8 +45,6 @@ fn parse_key(matches: getopts::Matches) -> Option<Box<CircRead>> {
 
 fn main() {
 
-    let mut kk: Option<Box<CircRead>> = None;
-
     let args: Vec<String> = env::args().collect();
     let program = args[0].clone();
 
@@ -63,18 +61,17 @@ fn main() {
             Err(f) => { panic!(f.to_string()) }
     };
 
-    kk = parse_key(matches);
+    let mut kk = match parse_key(matches) {
+        Some(key) => { key }
+        None => {
+            print_usage(&program, opts);
+            return; 
+        }
+    };
 
-    if kk.is_some() {
+    let mut fin = std::io::stdin();
+    let mut fout = std::io::stdout();
 
-        let mut fin = std::io::stdin();
-        let mut fout = std::io::stdout();
-
-        let k: &mut CircRead = &mut*kk.unwrap();
-        xor_file_to_file(k, &mut fin, &mut fout);
-        return;
-    }
-
-    print_usage(&program, opts);
+    xor_file_to_file(&mut*kk, &mut fin, &mut fout);
     return;
 }
