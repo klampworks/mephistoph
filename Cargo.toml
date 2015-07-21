@@ -2,3 +2,6 @@
 name = "mephistoph"
 version = "0.1.0"
 authors = ["yukipyon <wolfvbear@gmail.com>"]
+
+[dependencies]
+getopts = "0.2"
