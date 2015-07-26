@@ -18,23 +18,28 @@ fn xor_buf(key: &[u8], buf: &mut [u8]) {
 pub fn xor_file_to_file<T: Read, O: Write>
     (key: &mut CircRead, mut f: T, out: &mut O) {
 
-    let mut kbuf = [0u8; 5];
-    let mut dbuf = [0u8; 5];
+    let mut kbuf = [0u8; 500];
+    let mut dbuf = [0u8; 500];
+    let mut read = f.read(&mut dbuf)
+                       .ok()
+                       .expect("Could not read from stdin.");
 
-    while f.read(&mut dbuf)
-        .ok()
-        .expect("Could not read from stdin.") != 0 {
+    while read != 0 {
 
         key.circread(&mut kbuf);
-        xor_buf(&kbuf, &mut dbuf);
+        xor_buf(&kbuf[0 .. read-1], &mut dbuf[0 .. read-1]);
 
-        out.write(&dbuf)
+        out.write(&dbuf[0 .. read])
             .ok()
             .expect("Could not write to stdout.");
 
         out.flush()
             .ok()
             .expect("Could not flush stdout.");
+
+        read = f.read(&mut dbuf)
+                      .ok()
+                      .expect("Could not read from stdin.");
     }
 }
 
